@@ -1,15 +1,17 @@
 '''
-Loops on the events and operates the matching between reconstructed and generated taus.
-It produces two flat ntuples:
-    - one with an entry for each gen tau (useful for efficiencies)
-    - one with an entry for each reconstructed tau (useful for fake studies)
+Loops on the events and operates the matching between reconstructed and generated taus
+as well as reconstructed tau and seeding jet (geometrically closest to the tau).
+It produces a flat ntuple with one with an entry for each reconstructed tau.
+
+Tau recommendations
+https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauIDRecommendation13TeV
 '''
 import ROOT
 from time import time
 from datetime import datetime, timedelta
 from array import array
 from collections import OrderedDict
-from PhysicsTools.HeppyCore.utils.deltar import deltaR, deltaPhi
+from deltar import deltaR, deltaPhi
 
 # here the ntuple branches, and how to get the quantities stored in such branches, are defined
 from treeVariables import branches_event, branches_tau, branches_gen, branches_jet, branches_all, prepareBranches
@@ -91,29 +93,4 @@ for i, ev in enumerate(events):
 outfile_tau.cd()
 ntuple_tau .Write()
 outfile_tau.Close()
-
-
-#         if ev.nGenVisTau>0:
-#             print '=========RECO TAU========='
-#             print '\t reco had tau index %d' %itau
-#             print '\t\t pt         \t%.2f' %ev.Tau_pt         [itau]
-#             print '\t\t eta        \t%.2f' %ev.Tau_eta        [itau]
-#             print '\t\t phi        \t%.2f' %ev.Tau_phi        [itau]
-#             print '\t\t mass       \t%.2f' %ev.Tau_mass       [itau]
-#             print '\t\t decay mode \t%.2f' %ev.Tau_decayMode  [itau]
-#             print '\t\t charge     \t%d'   %ev.Tau_charge     [itau]
-#             print '\t\t genp index \t%d'   %ev.Tau_genPartIdx [itau]
-#             print '\t\t genp flavo \t%d'   %struct.unpack('B', ev.Tau_genPartFlav[itau])[0]
-#             print ''
-#             print '=========GEN TAU========='
-#             for igen in range(ev.nGenVisTau): 
-#                 print '\t gen had tau index %d' %igen
-#                 print '\t\t pt         \t%.2f' %ev.GenVisTau_pt              [igen]
-#                 print '\t\t eta        \t%.2f' %ev.GenVisTau_eta             [igen]
-#                 print '\t\t phi        \t%.2f' %ev.GenVisTau_phi             [igen]
-#                 print '\t\t mass       \t%.2f' %ev.GenVisTau_mass            [igen]
-#                 print '\t\t charge     \t%d'   %ev.GenVisTau_charge          [igen]
-#                 print '\t\t genp index \t%d'   %ev.GenVisTau_genPartIdxMother[igen]
-#                 print '\t\t decayMode  \t%d'   %ev.GenVisTau_status          [igen]
-#             import pdb ; pdb.set_trace()
 
