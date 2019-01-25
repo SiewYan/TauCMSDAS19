@@ -6,10 +6,10 @@ It produces two flat ntuples:
 '''
 import ROOT
 from time import time
+from datetime import datetime, timedelta
 from array import array
 from collections import OrderedDict
 from PhysicsTools.HeppyCore.utils.deltar import deltaR, deltaPhi
-from PhysicsTools.Heppy.physicsutils.TauDecayModes import tauDecayModes
 
 # here the ntuple branches, and how to get the quantities stored in such branches, are defined
 from treeVariables import branches_event, branches_tau, branches_gen, branches_jet, branches_all, prepareBranches
@@ -27,7 +27,7 @@ tofill_tau = OrderedDict(zip(branches_all_names, [-99.]*len(branches_all_names))
 events = ROOT.TChain('Events')
 for ifile in files:
     events.Add(ifile)
-maxevents = 1000 # max events to process
+maxevents = 500000 # max events to process
 totevents = events.GetEntries() if maxevents>=0 else events.GetEntries() # total number of events in the files
 
 ##########################################################################################
@@ -41,7 +41,10 @@ for i, ev in enumerate(events):
         break
         
     if i%100==0:
-        print '===> processing %d / %d event \t completed %.1f%s \t %.1f ev/s' %(i, maxevents, float(i)/maxevents*100., '%', float(i)/(time()-start))
+        percentage = float(i)/maxevents*100.
+        speed = float(i)/(time()-start)
+        eta = datetime.now() + timedelta(seconds=(maxevents-i) / max(0.1, speed))
+        print '===> processing %d / %d event \t completed %.1f%s \t %.1f ev/s \t ETA %s s' %(i, maxevents, percentage, '%', speed, eta.strftime('%Y-%m-%d %H:%M:%S'))
 
     ######################################################################################
     # fill the ntuple: each reco tau makes an entry
