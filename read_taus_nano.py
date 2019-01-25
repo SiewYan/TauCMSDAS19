@@ -5,39 +5,35 @@ It produces two flat ntuples:
     - one with an entry for each reconstructed tau (useful for fake studies)
 '''
 import ROOT
-import struct # convert packed formats to native python https://docs.python.org/2/library/struct.html#struct-format-strings
+from time import time
 from array import array
+from objects import createGenVisTau, GenVisTau, Particle, GenParticle
 from collections import OrderedDict
 from PhysicsTools.HeppyCore.utils.deltar import deltaR, deltaPhi
 from PhysicsTools.Heppy.physicsutils.TauDecayModes import tauDecayModes
 
-from treeVariables import branches # here the ntuple branches are defined
-from utils import isGenHadTau, finalDaughters, printer # utility functions
+# here the ntuple branches, and how to get the quantities stored in such branches, are defined
+from treeVariables import branches_event, branches_tau, branches_gen, branches_jet, branches_all, prepareBranches
+from files import dy_files as files
 
 ##########################################################################################
 # initialise output files to save the flat ntuples
-outfile_gen = ROOT.TFile('gen_tuple.root', 'recreate')
-ntuple_gen = ROOT.TNtuple('tree', 'tree', ':'.join(branches))
-tofill_gen = OrderedDict(zip(branches, [-99.]*len(branches))) # initialise all branches to unphysical -99       
-
 outfile_tau = ROOT.TFile('tau_tuple.root', 'recreate')
-ntuple_tau = ROOT.TNtuple('tree', 'tree', ':'.join(branches))
-tofill_tau = OrderedDict(zip(branches, [-99.]*len(branches))) # initialise all branches to unphysical -99       
-
-# outfile_jet = ROOT.TFile('jet_tuple.root', 'recreate')
-# ntuple_jet = ROOT.TNtuple('tree', 'tree', ':'.join(branches))
-# tofill_jet = OrderedDict(zip(branches, [-99.]*len(branches))) # initialise all branches to unphysical -99       
+branches_all_names = [br.name() for br in branches_all]
+ntuple_tau = ROOT.TNtuple('tree', 'tree', ':'.join(branches_all_names))
+tofill_tau = OrderedDict(zip(branches_all_names, [-99.]*len(branches_all_names))) # initialise all branches to unphysical -99       
 
 ##########################################################################################
 # Get ahold of the events
 events = ROOT.TChain('Events')
-events.Add('root://xrootd-cms.infn.it//store/group/phys_tau/ProdNanoAODv4Priv/16dec18/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18NanoAODv4Priv-from_102X_upgrade2018_realistic_v15_ver1/181216_125011/0000/myNanoRunMc2018_NANO_99.root') # make sure this corresponds to your file name!
-# events.Add('myNanoRunMc2018_NANO_99.root') # make sure this corresponds to your file name!
-maxevents = 30000 # max events to process
-totevents = min(maxevents, events.GetEntries()) # total number of events in the files
+for ifile in files:
+    events.Add(ifile)
+maxevents = 10000 # max events to process
+totevents = events.GetEntries() if maxevents>=0 else events.GetEntries() # total number of events in the files
 
 ##########################################################################################
 # start looping on the events
+start = time()
 for i, ev in enumerate(events):
     
     ######################################################################################
@@ -46,97 +42,76 @@ for i, ev in enumerate(events):
         break
         
     if i%100==0:
-        print '===> processing %d / %d event' %(i, totevents)
+        print '===> processing %d / %d event \t completed %.1f%s \t %.1f ev/s' %(i, maxevents, float(i)/maxevents*100., '%', float(i)/(time()-start))
 
     ######################################################################################
-    # fill the ntuple: each gen tau makes an entry
-    for igen in range(ev.nGenVisTau):
-        for k, v in tofill_gen.iteritems(): tofill_gen[k] = -99. # initialise before filling
-
-        # per event quantities
-        tofill_gen['run'  ] = ev.run      
-        tofill_gen['lumi' ] = ev.luminosityBlock
-        tofill_gen['event'] = ev.event    
-        tofill_gen['nvtx' ] = ev.PV_npvsGood
-
-        tofill_gen['gen_vis_tau_eta'             ] = ev.GenVisTau_eta             [igen]
-        tofill_gen['gen_vis_tau_mass'            ] = ev.GenVisTau_mass            [igen]
-        tofill_gen['gen_vis_tau_phi'             ] = ev.GenVisTau_phi             [igen]
-        tofill_gen['gen_vis_tau_pt'              ] = ev.GenVisTau_pt              [igen]
-        tofill_gen['gen_vis_tau_charge'          ] = ev.GenVisTau_charge          [igen]
-        tofill_gen['gen_vis_tau_genPartIdxMother'] = ev.GenVisTau_genPartIdxMother[igen]
-        tofill_gen['gen_vis_tau_status'          ] = ev.GenVisTau_status          [igen]
-
-        # fill the tree
-        ntuple_gen.Fill(array('f',tofill_gen.values()))
-    
-    ######################################################################################
-    # fill the ntuple: each gen tau makes an entry
+    # fill the ntuple: each reco tau makes an entry
     for itau in range(ev.nTau):
         for k, v in tofill_tau.iteritems(): tofill_tau[k] = -99. # initialise before filling
 
         # per event quantities
-        tofill_tau['run'  ] = ev.run      
-        tofill_tau['lumi' ] = ev.luminosityBlock
-        tofill_tau['event'] = ev.event    
-        tofill_tau['nvtx' ] = ev.PV_npvsGood
+        for ibranch in branches_event:
+            tofill_tau[ibranch.name()] = ibranch.value(ev)
 
         # per tau quantities
-        tofill_tau['tau_reco_chargedIso'              ] =                    ev.Tau_chargedIso              [itau]
-        tofill_tau['tau_reco_dxy'                     ] =                    ev.Tau_dxy                     [itau]
-        tofill_tau['tau_reco_dz'                      ] =                    ev.Tau_dz                      [itau]
-        tofill_tau['tau_reco_eta'                     ] =                    ev.Tau_eta                     [itau]
-        tofill_tau['tau_reco_leadTkDeltaEta'          ] =                    ev.Tau_leadTkDeltaEta          [itau]
-        tofill_tau['tau_reco_leadTkDeltaPhi'          ] =                    ev.Tau_leadTkDeltaPhi          [itau]
-        tofill_tau['tau_reco_leadTkPtOverTauPt'       ] =                    ev.Tau_leadTkPtOverTauPt       [itau]
-        tofill_tau['tau_reco_mass'                    ] =                    ev.Tau_mass                    [itau]
-        tofill_tau['tau_reco_neutralIso'              ] =                    ev.Tau_neutralIso              [itau]
-        tofill_tau['tau_reco_phi'                     ] =                    ev.Tau_phi                     [itau]
-        tofill_tau['tau_reco_photonsOutsideSignalCone'] =                    ev.Tau_photonsOutsideSignalCone[itau]
-        tofill_tau['tau_reco_pt'                      ] =                    ev.Tau_pt                      [itau]
-        tofill_tau['tau_reco_puCorr'                  ] =                    ev.Tau_puCorr                  [itau]
-        tofill_tau['tau_reco_rawAntiEle'              ] =                    ev.Tau_rawAntiEle              [itau]
-        tofill_tau['tau_reco_rawIso'                  ] =                    ev.Tau_rawIso                  [itau]
-        tofill_tau['tau_reco_rawIsodR03'              ] =                    ev.Tau_rawIsodR03              [itau]
-        tofill_tau['tau_reco_rawMVAnewDM2017v2'       ] =                    ev.Tau_rawMVAnewDM2017v2       [itau]
-        tofill_tau['tau_reco_rawMVAoldDM'             ] =                    ev.Tau_rawMVAoldDM             [itau]
-        tofill_tau['tau_reco_rawMVAoldDM2017v1'       ] =                    ev.Tau_rawMVAoldDM2017v1       [itau]
-        tofill_tau['tau_reco_rawMVAoldDM2017v2'       ] =                    ev.Tau_rawMVAoldDM2017v2       [itau]
-        tofill_tau['tau_reco_rawMVAoldDMdR032017v2'   ] =                    ev.Tau_rawMVAoldDMdR032017v2   [itau]
-        tofill_tau['tau_reco_charge'                  ] =                    ev.Tau_charge                  [itau]
-        tofill_tau['tau_reco_decayMode'               ] =                    ev.Tau_decayMode               [itau]
-        tofill_tau['tau_reco_jetIdx'                  ] =                    ev.Tau_jetIdx                  [itau]
-        tofill_tau['tau_reco_rawAntiEleCat'           ] =                    ev.Tau_rawAntiEleCat           [itau]
-        tofill_tau['tau_reco_idAntiEle'               ] = struct.unpack('B', ev.Tau_idAntiEle               [itau])[0]
-        tofill_tau['tau_reco_idAntiMu'                ] = struct.unpack('B', ev.Tau_idAntiMu                [itau])[0]
-        tofill_tau['tau_reco_idDecayMode'             ] =                    ev.Tau_idDecayMode             [itau]
-        tofill_tau['tau_reco_idDecayModeNewDMs'       ] =                    ev.Tau_idDecayModeNewDMs       [itau]
-        tofill_tau['tau_reco_idMVAnewDM2017v2'        ] = struct.unpack('B', ev.Tau_idMVAnewDM2017v2        [itau])[0]
-        tofill_tau['tau_reco_idMVAoldDM'              ] = struct.unpack('B', ev.Tau_idMVAoldDM              [itau])[0]
-        tofill_tau['tau_reco_idMVAoldDM2017v1'        ] = struct.unpack('B', ev.Tau_idMVAoldDM2017v1        [itau])[0]
-        tofill_tau['tau_reco_idMVAoldDM2017v2'        ] = struct.unpack('B', ev.Tau_idMVAoldDM2017v2        [itau])[0]
-        tofill_tau['tau_reco_idMVAoldDMdR032017v2'    ] = struct.unpack('B', ev.Tau_idMVAoldDMdR032017v2    [itau])[0]
-        tofill_tau['tau_reco_idMVAoldDM2017v2'        ] = struct.unpack('B', ev.Tau_idMVAoldDM2017v2        [itau])[0]
-        tofill_tau['tau_reco_idMVAoldDM2017v2'        ] = struct.unpack('B', ev.Tau_idMVAoldDM2017v2        [itau])[0]
-        
-        tofill_tau['tau_reco_genPartIdx'              ] =                    ev.Tau_genPartIdx              [itau]
-        tofill_tau['tau_reco_genPartFlav'             ] = struct.unpack('B', ev.Tau_genPartFlav             [itau])[0]
-                
-        # fill the tree
-        ntuple_tau.Fill(array('f',tofill_tau.values()))
+        for ibranch in branches_tau:
+            tofill_tau[ibranch.name()] = ibranch.value(ev)[itau]
 
+        # per gen tau quantities, find the gen visible tau that matches best (if any)
+        best_match_idx = -1
+        dRmax = 0.3
+        for igen in range(ev.nGenVisTau): 
+            dR = deltaR(ev.Tau_eta[itau], ev.Tau_phi[itau], ev.GenVisTau_eta[igen], ev.GenVisTau_phi[igen])
+            if dR > dRmax: continue
+            dRmax = dR
+            best_match_idx = igen
+        if best_match_idx>=0:
+            for ibranch in branches_gen:
+                tofill_tau[ibranch.name()] = ibranch.value(ev)[best_match_idx]
+ 
+        # per jet quantities, find the reco jet that matches best, aka tau seed (if any)
+        best_match_idx = -1
+        dRmax = 0.5
+        for ijet in range(ev.nJet): 
+            dR = deltaR(ev.Tau_eta[itau], ev.Tau_phi[itau], ev.Jet_eta[ijet], ev.Jet_phi[ijet])
+            if dR > dRmax: continue
+            dRmax = dR
+            best_match_idx = ijet
+        if best_match_idx>=0:
+            for ibranch in branches_jet:
+                tofill_tau[ibranch.name()] = ibranch.value(ev)[best_match_idx]
+
+        # fill the tree
+        ntuple_tau.Fill(array('f', prepareBranches(tofill_tau.values())))
 
 ##########################################################################################
 # write the ntuples and close the files
-outfile_gen.cd()
-ntuple_gen .Write()
-outfile_gen.Close()
-
 outfile_tau.cd()
 ntuple_tau .Write()
 outfile_tau.Close()
 
-# outfile_jet.cd()
-# ntuple_jet .Write()
-# outfile_jet.Close()
+
+#         if ev.nGenVisTau>0:
+#             print '=========RECO TAU========='
+#             print '\t reco had tau index %d' %itau
+#             print '\t\t pt         \t%.2f' %ev.Tau_pt         [itau]
+#             print '\t\t eta        \t%.2f' %ev.Tau_eta        [itau]
+#             print '\t\t phi        \t%.2f' %ev.Tau_phi        [itau]
+#             print '\t\t mass       \t%.2f' %ev.Tau_mass       [itau]
+#             print '\t\t decay mode \t%.2f' %ev.Tau_decayMode  [itau]
+#             print '\t\t charge     \t%d'   %ev.Tau_charge     [itau]
+#             print '\t\t genp index \t%d'   %ev.Tau_genPartIdx [itau]
+#             print '\t\t genp flavo \t%d'   %struct.unpack('B', ev.Tau_genPartFlav[itau])[0]
+#             print ''
+#             print '=========GEN TAU========='
+#             for igen in range(ev.nGenVisTau): 
+#                 print '\t gen had tau index %d' %igen
+#                 print '\t\t pt         \t%.2f' %ev.GenVisTau_pt              [igen]
+#                 print '\t\t eta        \t%.2f' %ev.GenVisTau_eta             [igen]
+#                 print '\t\t phi        \t%.2f' %ev.GenVisTau_phi             [igen]
+#                 print '\t\t mass       \t%.2f' %ev.GenVisTau_mass            [igen]
+#                 print '\t\t charge     \t%d'   %ev.GenVisTau_charge          [igen]
+#                 print '\t\t genp index \t%d'   %ev.GenVisTau_genPartIdxMother[igen]
+#                 print '\t\t decayMode  \t%d'   %ev.GenVisTau_status          [igen]
+#             import pdb ; pdb.set_trace()
 
