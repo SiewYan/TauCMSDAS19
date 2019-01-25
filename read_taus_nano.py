@@ -7,7 +7,6 @@ It produces two flat ntuples:
 import ROOT
 from time import time
 from array import array
-from objects import createGenVisTau, GenVisTau, Particle, GenParticle
 from collections import OrderedDict
 from PhysicsTools.HeppyCore.utils.deltar import deltaR, deltaPhi
 from PhysicsTools.Heppy.physicsutils.TauDecayModes import tauDecayModes
@@ -28,7 +27,7 @@ tofill_tau = OrderedDict(zip(branches_all_names, [-99.]*len(branches_all_names))
 events = ROOT.TChain('Events')
 for ifile in files:
     events.Add(ifile)
-maxevents = 10000 # max events to process
+maxevents = 1000 # max events to process
 totevents = events.GetEntries() if maxevents>=0 else events.GetEntries() # total number of events in the files
 
 ##########################################################################################
