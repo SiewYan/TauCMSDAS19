@@ -3,6 +3,7 @@ In this file you can define the branch to be included in the flat ntuple.
 You can find some basic quantities here, expand with more specific observables,
 such as isolation etc...
 '''
+import numpy as np
 import struct # convert packed formats to native python https://docs.python.org/2/library/struct.html#struct-format-strings
 
 class Variable(object):
