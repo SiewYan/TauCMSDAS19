@@ -2,6 +2,9 @@
 In this file you can define the branch to be included in the flat ntuple.
 You can find some basic quantities here, expand with more specific observables,
 such as isolation etc...
+
+Check NanoAOD content here
+https://cms-nanoaod-integration.web.cern.ch/integration/master-102X/mc102X_doc.html#Tau
 '''
 import numpy as np
 import struct # convert packed formats to native python https://docs.python.org/2/library/struct.html#struct-format-strings
@@ -22,6 +25,8 @@ class Variable(object):
 def prepareBranches(values):
     new_values = []
     for ivalue in values:
+        if isinstance(ivalue, long):
+            ivalue = long(ivalue)
         if isinstance(ivalue, bool):
             ivalue = int(ivalue)
         if isinstance(ivalue, str):
@@ -35,6 +40,7 @@ branches_event = [
     Variable('lumi'                        , lambda ev : ev.luminosityBlock             ),
     Variable('event'                       , lambda ev : ev.event                       ),
     Variable('ngvtx'                       , lambda ev : ev.PV_npvsGood                 ),
+    Variable('rho'                         , lambda ev : ev.fixedGridRhoFastjetAll      ),
 ]
 
 branches_tau = [
@@ -44,6 +50,8 @@ branches_tau = [
     Variable('tau_mass'                    , lambda ev : ev.Tau_mass                    ),
     Variable('tau_dxy'                     , lambda ev : ev.Tau_dxy                     ),
     Variable('tau_dz'                      , lambda ev : ev.Tau_dz                      ),
+    Variable('tau_charge'                  , lambda ev : ev.Tau_charge                  ),
+    Variable('tau_decayMode'               , lambda ev : ev.Tau_decayMode               ),
     Variable('tau_chargedIso'              , lambda ev : ev.Tau_chargedIso              ),
     Variable('tau_leadTkDeltaEta'          , lambda ev : ev.Tau_leadTkDeltaEta          ),
     Variable('tau_leadTkDeltaPhi'          , lambda ev : ev.Tau_leadTkDeltaPhi          ),
@@ -53,28 +61,31 @@ branches_tau = [
     Variable('tau_puCorr'                  , lambda ev : ev.Tau_puCorr                  ),
     Variable('tau_rawAntiEle'              , lambda ev : ev.Tau_rawAntiEle              ),
     Variable('tau_rawIso'                  , lambda ev : ev.Tau_rawIso                  ),
-    Variable('tau_rawIsodR03'              , lambda ev : ev.Tau_rawIsodR03              ),
     Variable('tau_rawMVAnewDM2017v2'       , lambda ev : ev.Tau_rawMVAnewDM2017v2       ),
-    Variable('tau_rawMVAoldDM'             , lambda ev : ev.Tau_rawMVAoldDM             ),
-    Variable('tau_rawMVAoldDM2017v1'       , lambda ev : ev.Tau_rawMVAoldDM2017v1       ),
-    Variable('tau_rawMVAoldDM2017v2'       , lambda ev : ev.Tau_rawMVAoldDM2017v2       ),
-    Variable('tau_rawMVAoldDMdR032017v2'   , lambda ev : ev.Tau_rawMVAoldDMdR032017v2   ),
-    Variable('tau_charge'                  , lambda ev : ev.Tau_charge                  ),
-    Variable('tau_decayMode'               , lambda ev : ev.Tau_decayMode               ),
-    Variable('tau_jetIdx'                  , lambda ev : ev.Tau_jetIdx                  ),
     Variable('tau_rawAntiEleCat'           , lambda ev : ev.Tau_rawAntiEleCat           ),
     Variable('tau_idAntiEle'               , lambda ev : ev.Tau_idAntiEle               ),
     Variable('tau_idAntiMu'                , lambda ev : ev.Tau_idAntiMu                ),
-    Variable('tau_idDecayMode'             , lambda ev : ev.Tau_idDecayMode             ),
-    Variable('tau_idDecayModeNewDMs'       , lambda ev : ev.Tau_idDecayModeNewDMs       ),
     Variable('tau_idMVAnewDM2017v2'        , lambda ev : ev.Tau_idMVAnewDM2017v2        ),
-    Variable('tau_idMVAoldDM'              , lambda ev : ev.Tau_idMVAoldDM              ),
-    Variable('tau_idMVAoldDM2017v1'        , lambda ev : ev.Tau_idMVAoldDM2017v1        ),
-    Variable('tau_idMVAoldDM2017v2'        , lambda ev : ev.Tau_idMVAoldDM2017v2        ),
-    Variable('tau_idMVAoldDMdR032017v2'    , lambda ev : ev.Tau_idMVAoldDMdR032017v2    ),
     Variable('tau_genPartIdx'              , lambda ev : ev.Tau_genPartIdx              ),
     Variable('tau_genPartFlav'             , lambda ev : ev.Tau_genPartFlav             ),
 ]
+
+##########################################################################################
+# Add more branches, most of them are not recommended isolation discriminators
+# branches_tau += [
+#     Variable('tau_jetIdx'                  , lambda ev : ev.Tau_jetIdx                  ),
+#     Variable('tau_rawIsodR03'              , lambda ev : ev.Tau_rawIsodR03              ),
+#     Variable('tau_rawMVAoldDM'             , lambda ev : ev.Tau_rawMVAoldDM             ),
+#     Variable('tau_rawMVAoldDM2017v1'       , lambda ev : ev.Tau_rawMVAoldDM2017v1       ),
+#     Variable('tau_rawMVAoldDM2017v2'       , lambda ev : ev.Tau_rawMVAoldDM2017v2       ),
+#     Variable('tau_rawMVAoldDMdR032017v2'   , lambda ev : ev.Tau_rawMVAoldDMdR032017v2   ),
+#     Variable('tau_idDecayMode'             , lambda ev : ev.Tau_idDecayMode             ),
+#     Variable('tau_idDecayModeNewDMs'       , lambda ev : ev.Tau_idDecayModeNewDMs       ),
+#     Variable('tau_idMVAoldDM'              , lambda ev : ev.Tau_idMVAoldDM              ),
+#     Variable('tau_idMVAoldDM2017v1'        , lambda ev : ev.Tau_idMVAoldDM2017v1        ),
+#     Variable('tau_idMVAoldDM2017v2'        , lambda ev : ev.Tau_idMVAoldDM2017v2        ),
+#     Variable('tau_idMVAoldDMdR032017v2'    , lambda ev : ev.Tau_idMVAoldDMdR032017v2    ),
+# ] 
 
 branches_gen = [
     Variable('tau_gen_pt'                  , lambda ev : ev.GenVisTau_pt                ),

@@ -58,8 +58,10 @@ tofill_tau = OrderedDict(zip(branches_all_names, [-99.]*len(branches_all_names))
 ##########################################################################################
 # Get ahold of the events
 events = ROOT.TChain('Events')
+print 'loading files ...'
 for ifile in files:
     events.Add(ifile)
+print '... done!'
 maxevents = maxevents if maxevents>=0 else events.GetEntries() # total number of events in the files
 
 ##########################################################################################
@@ -104,13 +106,7 @@ for i, ev in enumerate(events):
                 tofill_tau[ibranch.name()] = ibranch.value(ev)[best_match_idx]
  
         # per jet quantities, find the reco jet that matches best, aka tau seed (if any)
-        best_match_idx = -1
-        dRmax = 0.5
-        for ijet in range(ev.nJet): 
-            dR = deltaR(ev.Tau_eta[itau], ev.Tau_phi[itau], ev.Jet_eta[ijet], ev.Jet_phi[ijet])
-            if dR > dRmax: continue
-            dRmax = dR
-            best_match_idx = ijet
+        best_match_idx = ev.Tau_jetIdx[itau]
         if best_match_idx>=0:
             for ibranch in branches_jet:
                 tofill_tau[ibranch.name()] = ibranch.value(ev)[best_match_idx]
