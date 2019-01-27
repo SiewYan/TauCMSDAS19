@@ -3,6 +3,8 @@
 The esercise consists of two main parts: first produce flat ntuples containing quantities relevant for tau studies, 
 then process these ntuples to produce performance plots.
 
+**You can find the indroductory slides [at this link](https://manzoni.web.cern.ch/manzoni/tau_reconstruction_at_CMSDAS2019.pdf)**
+
 ## Outline
 * installation
 * package content
