@@ -1,4 +1,4 @@
-# Tau POG exercise @ CMSDAS 2019
+# Tau POG short exercise @ CMSDAS 2019
 
 The esercise consists of two main parts: first produce flat ntuples containing quantities relevant for tau studies, 
 then process these ntuples to produce performance plots.
@@ -97,4 +97,9 @@ https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauIDRecommendation13TeV
 
 **Software guide**  
 https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuidePFTauID
+
+**Tau long exercise at 2017 CMS Physics Object School**  
+For a more extensive plunge in Tau realm, including accessing to the information stored in MiniAOD, rerunning the HPS algorithm and more, see:  
+https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideCMSPhysicsObjectSchoolBARI2017Tau  
+https://github.com/rmanzoni/TauRecoCMSPOS
 
