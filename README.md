@@ -10,6 +10,7 @@ then process these ntuples to produce performance plots.
 * package content
 * how to run the ntupliser on DY and QCD MC
 * investigate the ntuples, produce performance plots
+* links and references
 
 ### Installation
 
@@ -82,3 +83,18 @@ During the exercise we'll gothrough the notebook together and you'll be encourag
 code implementation to satisfy the requests.  
 You can always look at the official code snippets, they're in the notebook itself, 
 but only do it as last resort and give yourself a chance to learn by trying in first person!
+
+### Links and references
+
+**Tau POG on indico**  
+https://indico.cern.ch/category/6330/
+
+**Main Tau POG TWiki**  
+https://twiki.cern.ch/twiki/bin/view/CMS/Tau
+
+**Recipes and recommendations**  
+https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauIDRecommendation13TeV
+
+**Software guide**  
+https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuidePFTauID
+
