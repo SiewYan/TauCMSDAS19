@@ -42,8 +42,8 @@ You can submit your changes to this package as pull requests.
 ### Package content
 
 In the `TauCMSDAS19` directory you'll find the following files:
-* `read_taus_nano.py` is the ntupliser, you'll have to produce your own ntuples using the following commands
-* `treeVariables.py` where the branches of the flat ntuples are defined. Here you can adjust the event content to your taste, 
+* `read_taus_nano.py` is the ntupliser, you'll have to run this python script to produce your own ntuples (details in the next section)
+* `treeVariables.py` where the branches of the output flat ntuples are defined. Here you can adjust the event content to your taste, 
 e.g. adding more information into the flat ntuple, as well as you can see how the information is fetched from the original `NanoAOD`
 * `files.py` and `deltar.py` are utils to fetch the original `NanoAOD`s and to compute deltaR repectively. Ideally you won't need to touch them at all
 * `branches.txt` is a snapshot of the documentation of the `NanoAOD` content. Very useful if you want to know what's what
