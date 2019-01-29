@@ -30,7 +30,7 @@ def prepareBranches(values):
         if isinstance(ivalue, bool):
             ivalue = int(ivalue)
         if isinstance(ivalue, str):
-            ivalue = struct.unpack('B', ivalue)[0]
+            ivalue = np.log2(struct.unpack('B', ivalue)[0] + 1)
         new_values.append(ivalue)
     return new_values
  
