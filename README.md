@@ -86,6 +86,15 @@ code implementation to satisfy the requests.
 You can always look at the official code snippets, they're in the notebook itself, 
 but only do it as last resort and give yourself a chance to learn by trying in first person!
 
+### Tips & Tricks
+* Let the job run even if the session is closed: 
+   * https://en.wikipedia.org/wiki/Nohup
+   * https://it.wikipedia.org/wiki/GNU_Screen
+* reco decay mode logic: `decayMode = 5*(n_ch-1) + n_pi0`
+   * e.g.: 1-prong + 1pi0 ==> `5*(1-1) + 1 = 1`
+* python debugger: https://docs.python.org/2/library/pdb.html
+   * insert this line `import pdb; pdb.set_trace()` at the exact point you want to pause the script execution and interactively inspect the code
+
 ### Links and references
 
 **Tau POG on indico**  
