@@ -91,7 +91,7 @@ We suggest that, during the hands on exercise, you follow the passages in the no
 ### Tips & Tricks
 * Let the job run even if the session is closed: 
    * https://en.wikipedia.org/wiki/Nohup
-   * https://it.wikipedia.org/wiki/GNU_Screen
+   * https://en.wikipedia.org/wiki/GNU_Screen
 * reco decay mode logic: `decayMode = 5*(n_ch-1) + n_pi0`
    * e.g.: 1-prong + 1pi0 ==> `5*(1-1) + 1 = 1`
 * python debugger: https://docs.python.org/2/library/pdb.html
