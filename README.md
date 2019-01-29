@@ -23,7 +23,7 @@ In any case, we choose a very recent release CMSSW_10_2_10.
 cmsrel CMSSW_10_2_10
 cd CMSSW_10_2_10/src
 cmsenv
-git clone git@github.com:rmanzoni/TauCMSDAS19.git
+git clone https://github.com/rmanzoni/TauCMSDAS19.git
 cd TauCMSDAS19
 ```
 
