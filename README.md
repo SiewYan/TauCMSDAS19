@@ -30,11 +30,11 @@ cd TauCMSDAS19
 If you'd like to contribute to this package (and you're more than welcome to do so!)
 you may want to first `fork` this repository, then replace
 ```
-git clone git@github.com:rmanzoni/TauCMSDAS19.git
+git clone https://github.com/rmanzoni/TauCMSDAS19.git
 ```
 with
 ```
-git clone git@github.com:YOUR_GITHUB_NAME/TauCMSDAS19.git
+git clone https://github.com/YOUR_GITHUB_USERNAME/TauCMSDAS19.git
 ```
 in the instructions above.
 You can submit your changes to this package as pull requests.
