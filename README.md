@@ -86,6 +86,8 @@ code implementation to satisfy the requests.
 You can always look at the official code snippets, they're in the notebook itself, 
 but only do it as last resort and give yourself a chance to learn by trying in first person!
 
+We suggest that, during the hands on exercise, you follow the passages in the notebook interactively in a `ipython` session and/or write code in a separate python file.
+
 ### Tips & Tricks
 * Let the job run even if the session is closed: 
    * https://en.wikipedia.org/wiki/Nohup
