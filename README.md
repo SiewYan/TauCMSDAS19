@@ -55,6 +55,8 @@ The ntupliser reads `NanoAOD` files stored on the shared file sistem in Pisa
 at `/gpfs/ddn/cms/user/cmsdas/2019/TauExercise/{dy, qcd}` and produces flat ntuples where each reco tau makes 
 an entry.  
 
+Side note: these samples are a (partial) local copy of these, normally published and hence accessible from anywhere, [QCD](https://cmsweb.cern.ch/das/request?input=dataset%3D%2FQCD_Pt-15to7000_TuneCP5_Flat2018_13TeV_pythia8%2Fmanzoni-RunIIAutumn18NanoAODv4Priv-from_102X_upgrade2018_realistic_v15_ext1_ver1-fef0eb32e058a18d2c275120191b003f%2FUSER&instance=prod/phys03) and [DY](https://cmsweb.cern.ch/das/request?input=dataset%3D%2FDYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8%2Fmanzoni-RunIIAutumn18NanoAODv4Priv-from_102X_upgrade2018_realistic_v15_ver1-fef0eb32e058a18d2c275120191b003f%2FUSER&instance=prod/phys03) samples.
+
 The choice to read off `NanoAOD` is based on different reasons:
 * it is a lightweght, centrally produced (and validated) format
 * Tau POG is moving towards larger adoption of `NanoAOD`, especially for performance measurements
